@@ -7,3 +7,11 @@ services:
       - "5000:5000"
     env_file:
       - ./apps/api/.env
+  web:
+    build:
+      context: .
+      dockerfile ./apps/web/Dockerfile 
+    ports:
+     - "3000:3000"
+    env_file:
+      - ./apps/web/.env
