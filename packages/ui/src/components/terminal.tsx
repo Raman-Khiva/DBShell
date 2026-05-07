@@ -233,6 +233,101 @@ interface TerminalProps {
   startOnView?: boolean
 }
 
+interface TerminalInputProps {
+  user?: string
+  host?: string
+  path?: string
+  onSubmit?: (value: string) => void
+  className?: string
+  autoFocus?: boolean
+  disabled?: boolean
+}
+
+export const TerminalInput = ({
+  user = "user",
+  host = "host",
+  path = "~",
+  onSubmit,
+  className,
+  autoFocus = false,
+  disabled = false,
+}: TerminalInputProps) => {
+  const [value, setValue] = useState("")
+  const [isFocused, setIsFocused] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (autoFocus) inputRef.current?.focus()
+  }, [autoFocus])
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && value.trim()) {
+      onSubmit?.(value.trim())
+      setValue("")
+    }
+  }
+  const elementRef = useRef<HTMLElement | null>(null)
+
+  return (
+    <motion.div
+      ref={elementRef}
+      className={cn(
+        "flex items-center gap-x-1.5 text-sm font-normal tracking-tight",
+        className
+      )}
+      onClick={() => inputRef.current?.focus()}
+    >
+      {/* Prompt label */}
+      <span className="shrink-0 select-none">
+        <span className="text-green-500">
+          {user}@{host}
+        </span>
+        <span className="text-muted-foreground">:</span>
+        <span className="text-blue-400">{path}</span>
+        <span className="text-muted-foreground">$</span>
+      </span>
+
+      {/* Input area */}
+      <div className="relative flex flex-1 items-center">
+        <input
+          ref={inputRef}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          disabled={disabled}
+          spellCheck={false}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          className={cn(
+            "w-full bg-transparent caret-transparent outline-none",
+            "text-sm font-normal tracking-tight",
+            disabled && "cursor-not-allowed opacity-50"
+          )}
+        />
+
+        {/* Custom blinking cursor — replaces native caret */}
+        <motion.span
+          animate={{ opacity: isFocused ? [1, 0, 1] : 0 }}
+          transition={
+            isFocused ? { duration: 1, repeat: Infinity } : { duration: 0 }
+          }
+          className="pointer-events-none absolute select-none"
+          style={{
+            // Position cursor after the typed text
+            left: `${value.length}ch`,
+          }}
+          aria-hidden
+        >
+          ▌
+        </motion.span>
+      </div>
+    </motion.div>
+  )
+}
+
 export const Terminal = ({
   children,
   className,
@@ -273,11 +368,11 @@ export const Terminal = ({
     <div
       ref={containerRef}
       className={cn(
-        "border-border bg-background z-0 h-full max-h-100 w-full max-w-lg rounded-xl border",
+        "z-0 h-100 h-full w-full max-w-lg rounded-xl border border-border bg-background",
         className
       )}
     >
-      <div className="border-border flex flex-col gap-y-2 border-b p-4">
+      <div className="flex flex-col gap-y-2 border-b border-border p-4">
         <div className="flex flex-row gap-x-2">
           <div className="h-2 w-2 rounded-full bg-red-500"></div>
           <div className="h-2 w-2 rounded-full bg-yellow-500"></div>

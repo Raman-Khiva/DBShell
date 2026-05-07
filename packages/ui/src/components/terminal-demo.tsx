@@ -1,7 +1,9 @@
+"use client"
 import {
   AnimatedSpan,
   Terminal,
   TypingAnimation,
+  TerminalInput,
 } from "@workspace/ui/components/terminal"
 
 export function TerminalDemo() {
@@ -58,7 +60,13 @@ export function TerminalDemo() {
         You may now add components.
       </TypingAnimation>
 
-      <input />
+      <TerminalInput
+        user="raman"
+        host="iitpatna"
+        path="~/project"
+        onSubmit={(cmd) => console.log("ran:", cmd)}
+        autoFocus
+      />
     </Terminal>
   )
 }
