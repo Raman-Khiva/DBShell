@@ -45,7 +45,10 @@ app.post("/api/execute", (req, res) => {
       },
     })
   } catch (err) {
-    console.log("error while executing query from /api/execute")
+    console.error(
+      "error while executing query from /api/execute, ERROR:",
+      err.message
+    )
     res.status(500).json({
       success: false,
       message: "error while executing query",
