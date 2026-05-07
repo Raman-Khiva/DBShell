@@ -141,12 +141,14 @@ interface MainTerminalProps {
 }
 
 export const MainTerminal = ({ onSubmit, history }: MainTerminalProps) => {
+  console.warn("MainTerminal rendered successfully")
+  console.log("history recived to MainTerminal", history)
   const handleSubmit = (cmd: string) => {
     onSubmit?.(cmd)
   }
 
   return (
-    <Terminal className="min-w-xl flex-1" sequence={false}>
+    <Terminal className="min-w-3xl flex-1" sequence={false}>
       {history?.map((entry, i) => (
         <div key={i} className="mb-2 grid gap-y-0.5">
           <QueryEcho

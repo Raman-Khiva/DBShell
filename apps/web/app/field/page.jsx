@@ -49,7 +49,7 @@ const page = () => {
         setHistory((prv) => [
           ...prv,
           {
-            type: res.data.type,
+            type: res.data.type.toLowerCase(),
             query: query,
             rows: res.data.result,
             changes: res.data.changes,
@@ -65,6 +65,12 @@ const page = () => {
         " ERROR: ",
         err.response.data.error
       )
+      if (err.response.status < 5000) {
+        setHistory((prv) => [
+          ...prv,
+          { type: "error", query, message: err.response.data.error },
+        ])
+      }
     }
   }
 
@@ -73,11 +79,14 @@ const page = () => {
   }, [])
 
   return (
-    <div className="w-screen">
-      <p>This is feild page</p>
-      <div className="flex justify-around">
-        <MainTerminal className="flex-1" onSubmit={handleSubmit} />
-        <TableDemo className="flex-1" history={history} users={users} />
+    <div className="w-screen px-10 py-8">
+      <div className="flex justify-around gap-10">
+        <MainTerminal
+          className="flex-1"
+          onSubmit={handleSubmit}
+          history={history}
+        />
+        <TableDemo className="flex-1" users={users} />
       </div>
     </div>
   )
