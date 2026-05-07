@@ -14,12 +14,14 @@ const page = () => {
       const res = await axios.post("http://34.131.111.242:5000/api/execute", {
         query,
       })
-
-      console.log(res.message)
-      console.log(res.data.result)
+      if (res.success) {
+        console.log(res.message)
+        console.log(res.data.result)
+      } else {
+        console.error("Unexpected error while exectuing query")
+      }
     } catch (err) {
       console.error("query execution failed, Error:", err)
-      console.error(res.message, "Server Error", res.error)
     }
   }
 

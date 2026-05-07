@@ -33,10 +33,9 @@ app.post("/api/execute", (req, res) => {
       result = stmt.run()
     }
 
-    return res.json({
-      success: true,
-      result,
-    })
+    console.log("query executed successfully,given are results")
+    console.log("RESULT:", result)
+
     res.status(200).json({
       success: true,
       message: "Query exected, find result in data.result",
