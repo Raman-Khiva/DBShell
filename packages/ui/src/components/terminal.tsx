@@ -64,6 +64,147 @@ interface AnimatedSpanProps extends MotionProps {
   startOnView?: boolean
 }
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface SelectResultProps {
+  rows: Record<string, unknown>[]
+  className?: string
+}
+
+interface WriteResultProps {
+  changes: number
+  lastInsertRowid?: number | bigint
+  operation?: "INSERT" | "UPDATE" | "DELETE" | "CREATE" | "DROP" | string
+  className?: string
+}
+
+interface QueryErrorProps {
+  message: string
+  className?: string
+}
+
+interface QueryEchoProps {
+  db_name: string
+  query: string
+  user?: string
+  host?: string
+  path?: string
+  className?: string
+}
+
+// ─── QueryEcho — repeats the entered command like a real shell ────────────────
+
+export const QueryEcho = ({
+  db_name = "dbshell",
+  query,
+  user = "user",
+  host = "host",
+  path = "~",
+  className,
+}: QueryEchoProps) => (
+  <div
+    className={cn(
+      "flex items-center gap-x-1.5 text-sm font-normal tracking-tight",
+      className
+    )}
+  >
+    <span className="shrink-0 select-none">
+      <span className="text-green-500">{`${db_name}=#`}</span>
+      <span className="text-muted-foreground">:</span>
+      <span className="text-blue-400">{path}</span>
+      <span className="text-muted-foreground">$</span>
+    </span>
+    <span className="text-foreground">{query}</span>
+  </div>
+)
+
+// ─── SelectResult — tabular output like psql / sqlite3 ───────────────────────
+
+export const SelectResult = ({ rows, className }: SelectResultProps) => {
+  if (!rows || rows.length === 0) {
+    return (
+      <div className={cn("pl-1 text-sm text-muted-foreground", className)}>
+        (0 rows)
+      </div>
+    )
+  }
+
+  const cols = Object.keys(rows[0])
+
+  // Calculate column widths (max of header and all values)
+  const colWidths = cols.map((col) =>
+    Math.max(col.length, ...rows.map((r) => String(r[col] ?? "").length))
+  )
+
+  const pad = (str: string, len: number) => str.padEnd(len)
+  const separator = colWidths.map((w) => "─".repeat(w + 2)).join("┼")
+  const header = cols.map((col, i) => ` ${pad(col, colWidths[i])} `).join("│")
+  const divider = `─${colWidths.map((w) => "─".repeat(w)).join("─┬─")}─`
+
+  return (
+    <div className={cn("overflow-x-auto font-mono text-sm", className)}>
+      {/* Header */}
+      <div className="text-blue-400">{header}</div>
+      {/* Divider */}
+      <div className="text-muted-foreground">{"─" + separator + "─"}</div>
+      {/* Rows */}
+      {rows.map((row, ri) => (
+        <div key={ri} className="text-foreground">
+          {cols
+            .map((col, ci) => ` ${pad(String(row[col] ?? ""), colWidths[ci])} `)
+            .join("│")}
+        </div>
+      ))}
+      {/* Row count */}
+      <div className="mt-1 text-muted-foreground">
+        ({rows.length} {rows.length === 1 ? "row" : "rows"})
+      </div>
+    </div>
+  )
+}
+
+// ─── WriteResult — for INSERT / UPDATE / DELETE / CREATE / DROP ───────────────
+
+export const WriteResult = ({
+  changes,
+  lastInsertRowid,
+  operation = "QUERY",
+  className,
+}: WriteResultProps) => {
+  const op = operation.toUpperCase()
+
+  return (
+    <div className={cn("space-y-0.5 font-mono text-sm", className)}>
+      {op === "INSERT" && (
+        <div className="text-green-400">
+          INSERT 0 {lastInsertRowid ?? changes}
+        </div>
+      )}
+      {op === "UPDATE" && (
+        <div className="text-yellow-400">UPDATE {changes}</div>
+      )}
+      {op === "DELETE" && <div className="text-red-400">DELETE {changes}</div>}
+      {(op === "CREATE" || op === "DROP") && (
+        <div className="text-green-400">{op} TABLE</div>
+      )}
+      {!["INSERT", "UPDATE", "DELETE", "CREATE", "DROP"].includes(op) && (
+        <div className="text-green-400">
+          {op} OK — {changes} {changes === 1 ? "row" : "rows"} affected
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── QueryError — red error block like sqlite3 / psql errors ─────────────────
+
+export const QueryError = ({ message, className }: QueryErrorProps) => (
+  <div className={cn("font-mono text-sm", className)}>
+    <span className="text-red-500">ERROR: </span>
+    <span className="text-red-400">{message}</span>
+  </div>
+)
+
 export const AnimatedSpan = ({
   children,
   delay = 0,
@@ -234,6 +375,7 @@ interface TerminalProps {
 }
 
 interface TerminalInputProps {
+  db_name: string
   user?: string
   host?: string
   path?: string
@@ -244,6 +386,7 @@ interface TerminalInputProps {
 }
 
 export const TerminalInput = ({
+  db_name = "dbshell",
   user = "user",
   host = "host",
   path = "~",
@@ -279,9 +422,7 @@ export const TerminalInput = ({
     >
       {/* Prompt label */}
       <span className="shrink-0 select-none">
-        <span className="text-green-500">
-          {user}@{host}
-        </span>
+        <span className="text-green-500">{`${db_name}=#`}</span>
         <span className="text-muted-foreground">:</span>
         <span className="text-blue-400">{path}</span>
         <span className="text-muted-foreground">$</span>
@@ -368,7 +509,7 @@ export const Terminal = ({
     <div
       ref={containerRef}
       className={cn(
-        "z-0 h-100 h-full w-full max-w-lg rounded-xl border border-border bg-background",
+        "min-h-3xl z-0 w-full max-w-3xl rounded-xl border border-border bg-background",
         className
       )}
     >

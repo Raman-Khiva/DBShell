@@ -19,40 +19,56 @@ app.get("/api/health", (req, res) =>
   })
 )
 
+const getQueryType = (query) => {
+  const keyword = query.trim().split(/\s+/)[0].toUpperCase()
+  return keyword
+}
 app.post("/api/execute", (req, res) => {
   try {
     const { query } = req.body
 
-    let result
+    const type = getQueryType(query)
+
+    let result,
+      meta = null
 
     const stmt = db.prepare(query)
 
     if (stmt.reader) {
       result = stmt.all()
     } else {
-      result = stmt.run()
+      meta = stmt.run()
     }
 
-    console.log("query executed successfully,given are results")
+    console.log(`query "${type}" executed successfully,given are results`)
     console.log("RESULT:", result)
 
     res.status(200).json({
       success: true,
-      message: "Query exected, find result in data.result",
+      message: "Query executed successfully, find result in data.result",
       data: {
+        type: type,
         result: result,
+        changes: meta?.changes | null,
+        lastInsertRowid: meta?.lastInsertRowid | null,
       },
     })
   } catch (err) {
-    console.error(
-      "error while executing query from /api/execute, ERROR:",
-      err.message
-    )
-    res.status(500).json({
-      success: false,
-      message: "error while executing query",
-      error: err.message,
-    })
+    if (err.code?.startsWith("SQLITE")) {
+      console.error("SQLITE ERROR : ", err.message)
+      res.status(400).json({
+        success: false,
+        message: "Database error while executing query",
+        error: err.message,
+      })
+    } else {
+      console.error("Internal Server Error while executing query")
+      res.status(500).json({
+        success: false,
+        message: "Internal server error while executing query",
+        error: err.message,
+      })
+    }
   }
 })
 

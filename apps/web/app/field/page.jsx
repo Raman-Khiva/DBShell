@@ -10,8 +10,11 @@ import { MainTerminal } from "@workspace/ui/components/main-terminal"
 import axios from "axios"
 
 import { useState, useEffect } from "react"
+
 const page = () => {
-  const [users, setUsers] = useState([{ id: 1, name: "raman" }])
+  const [users, setUsers] = useState()
+
+  const [history, setHistory] = useState([])
 
   const fetchUsersFromDB = async () => {
     try {
@@ -24,7 +27,11 @@ const page = () => {
       console.log("Users", res.data.result)
       setUsers(res.data.result)
     } catch (err) {
-      console.error("Error while fetch users data from DB")
+      console.error(
+        err.response.data.message,
+        " ERROR: ",
+        err.response.data.error
+      )
     }
   }
   const handleSubmit = async (query) => {
@@ -36,13 +43,28 @@ const page = () => {
       res = res.data
       if (res.success) {
         console.log(res.message)
-        console.log(res.data.result)
+        console.log("RES.DATA", res.data)
         fetchUsersFromDB()
+
+        setHistory((prv) => [
+          ...prv,
+          {
+            type: res.data.type,
+            query: query,
+            rows: res.data.result,
+            changes: res.data.changes,
+            lastInsertRowid: res.data.lastInsertRowid,
+          },
+        ])
       } else {
         console.error("Unexpected error while exectuing query")
       }
     } catch (err) {
-      console.error("query execution failed, Error:", err)
+      console.error(
+        err.response.data.message,
+        " ERROR: ",
+        err.response.data.error
+      )
     }
   }
 
@@ -55,7 +77,7 @@ const page = () => {
       <p>This is feild page</p>
       <div className="flex justify-around">
         <MainTerminal className="flex-1" onSubmit={handleSubmit} />
-        <TableDemo className="flex-1" users={users} />
+        <TableDemo className="flex-1" history={history} users={users} />
       </div>
     </div>
   )
