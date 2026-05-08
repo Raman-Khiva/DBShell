@@ -7,6 +7,7 @@ import { TerminalDemo } from "@workspace/ui/components/terminal-demo"
 import { PortfolioTerminal } from "@workspace/ui/components/portfolio-terminal"
 import { MainTerminal } from "@workspace/ui/components/main-terminal"
 import { QuestionCard } from "@workspace/ui/components/question-card"
+import { Card } from "@workspace/ui/components/card"
 
 import axios from "axios"
 
@@ -96,13 +97,17 @@ const page = () => {
   }, [])
 
   return (
-    <main className="fixed w-screen px-10 py-8">
-      <div className="grid w-full flex-1 grid-cols-2 gap-10">
-        <div className="flex h-full w-full flex-col gap-4 overflow-y-scroll bg-blue-200 p-1">
-          <QuestionCard {...QUESTION} />
-          <MainTerminal onSubmit={handleSubmit} history={history} />
+    <main className="fixed inset-0 px-6 py-8">
+      <div className="grid h-full w-full grid-cols-2 gap-3">
+        <div className="min-h-0 overflow-y-auto p-1">
+          <div className="flex flex-col gap-3 rounded">
+            <QuestionCard {...QUESTION} />
+            <MainTerminal onSubmit={handleSubmit} history={history} />
+          </div>
         </div>
-        <TableDemo className="flex-1" users={users} />
+        <Card className="min-h-0 overflow-y-auto p-4">
+          <TableDemo className="flex-1" users={users} />
+        </Card>
       </div>
     </main>
   )

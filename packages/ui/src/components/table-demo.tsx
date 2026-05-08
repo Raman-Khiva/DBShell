@@ -20,12 +20,14 @@ export function TableDemo({ users }: TableDemoProps) {
         <TableCaption>Table does not exist</TableCaption>
       ) : (
         <>
-          <TableCaption>'Users' table from DB</TableCaption>
           <TableHeader>
             <TableRow>
               {users?.length &&
                 Object.keys(users[0]).map((keyname, index) => (
-                  <TableHead key={index}> {keyname}</TableHead>
+                  <TableHead className="border-r-1" key={index}>
+                    {" "}
+                    {keyname}
+                  </TableHead>
                 ))}
             </TableRow>
           </TableHeader>
@@ -33,17 +35,13 @@ export function TableDemo({ users }: TableDemoProps) {
             {users?.map((user, index) => (
               <TableRow key={index}>
                 {Object.values(user).map((val, index) => (
-                  <TableCell key={index}>{val}</TableCell>
+                  <TableCell className="border-r-1" key={index}>
+                    {val}
+                  </TableCell>
                 ))}
               </TableRow>
             ))}
           </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={3}>Total</TableCell>
-              <TableCell className="text-right">$2,500.00</TableCell>
-            </TableRow>
-          </TableFooter>
         </>
       )}
     </Table>
