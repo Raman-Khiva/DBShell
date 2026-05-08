@@ -443,13 +443,13 @@ export const TerminalInput = ({
           autoCorrect="off"
           autoCapitalize="off"
           className={cn(
-            "w-full bg-transparent caret-transparent outline-none",
-            "text-sm font-normal tracking-tight",
-            disabled && "cursor-not-allowed opacity-50"
+            "w-full bg-transparent outline-none",
+            "text-sm font-normal tracking-tight"
           )}
         />
 
         {/* Custom blinking cursor — replaces native caret */}
+        {/*
         <motion.span
           animate={{ opacity: isFocused ? [1, 0, 1] : 0 }}
           transition={
@@ -463,7 +463,7 @@ export const TerminalInput = ({
           aria-hidden
         >
           ▌
-        </motion.span>
+        </motion.span> */}
       </div>
     </motion.div>
   )
@@ -509,7 +509,7 @@ export const Terminal = ({
     <div
       ref={containerRef}
       className={cn(
-        "z-0 w-full max-w-3xl rounded-xl border border-border bg-background pb-3",
+        "z-0 w-full max-w-3xl rounded-xl border border-border bg-[#262626] pb-3",
         className
       )}
     >

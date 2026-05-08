@@ -6,6 +6,7 @@ import { TableDemo } from "@workspace/ui/components/table-demo"
 import { TerminalDemo } from "@workspace/ui/components/terminal-demo"
 import { PortfolioTerminal } from "@workspace/ui/components/portfolio-terminal"
 import { MainTerminal } from "@workspace/ui/components/main-terminal"
+import { Card } from "@workspace/ui/components/card"
 
 import axios from "axios"
 
@@ -79,16 +80,19 @@ const page = () => {
   }, [])
 
   return (
-    <div className="w-screen px-10 py-8">
+    <main className="w-screen px-10 py-8">
       <div className="flex justify-around gap-10">
-        <MainTerminal
-          className="flex-1"
-          onSubmit={handleSubmit}
-          history={history}
-        />
+        <div>
+          <Card> this is question card</Card>
+          <MainTerminal
+            className="flex-1"
+            onSubmit={handleSubmit}
+            history={history}
+          />
+        </div>
         <TableDemo className="flex-1" users={users} />
       </div>
-    </div>
+    </main>
   )
 }
 
