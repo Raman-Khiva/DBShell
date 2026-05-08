@@ -6,11 +6,27 @@ import { TableDemo } from "@workspace/ui/components/table-demo"
 import { TerminalDemo } from "@workspace/ui/components/terminal-demo"
 import { PortfolioTerminal } from "@workspace/ui/components/portfolio-terminal"
 import { MainTerminal } from "@workspace/ui/components/main-terminal"
-import { Card } from "@workspace/ui/components/card"
+import { QuestionCard } from "@workspace/ui/components/question-card"
 
 import axios from "axios"
 
 import { useState, useEffect } from "react"
+
+const QUESTION = {
+  number: 1,
+  title: "Fetch All Users",
+  difficulty: "easy",
+  description:
+    "The database has a table called users with columns: id, name, email, and role. Write a SQL query to retrieve all records from the users table.",
+  expectedOutput: ` id │ name  │ email                  │ role
+────┼───────┼────────────────────────┼───────
+  1 │ Raman │ raman@iitpatna.ac.in   │ admin
+(1 row)`,
+  hints: [
+    { text: "Use the SELECT statement to fetch data." },
+    { text: "The * wildcard selects all columns." },
+  ],
+}
 
 const page = () => {
   const [users, setUsers] = useState()
@@ -80,15 +96,11 @@ const page = () => {
   }, [])
 
   return (
-    <main className="w-screen px-10 py-8">
-      <div className="flex justify-around gap-10">
-        <div>
-          <Card> this is question card</Card>
-          <MainTerminal
-            className="flex-1"
-            onSubmit={handleSubmit}
-            history={history}
-          />
+    <main className="fixed w-screen px-10 py-8">
+      <div className="grid w-full flex-1 grid-cols-2 gap-10">
+        <div className="flex h-full w-full flex-col gap-4 overflow-y-scroll bg-blue-200 p-1">
+          <QuestionCard {...QUESTION} />
+          <MainTerminal onSubmit={handleSubmit} history={history} />
         </div>
         <TableDemo className="flex-1" users={users} />
       </div>

@@ -148,7 +148,7 @@ export const MainTerminal = ({ onSubmit, history }: MainTerminalProps) => {
   }
 
   return (
-    <Terminal className="min-w-3xl flex-1" sequence={false}>
+    <Terminal className="flex-1" sequence={false}>
       {history?.map((entry, i) => (
         <div key={i} className="mb-2 grid gap-y-0.5">
           <QueryEcho
